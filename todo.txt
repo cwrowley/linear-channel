@@ -1,0 +1,3 @@
+- Delete superfluous files
+- Modify and add to main2.m to include desired functionality
+- Ensure that all inner products that are explicitly or implicitly computed use the appropriate quadrature weights

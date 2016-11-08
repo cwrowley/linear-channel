@@ -1,4 +1,4 @@
-function [A,Aadj, B, Mmat, Npts, y, z] = define_eqns(Ny, Nz, Re)
+function [A,Aadj, B, Mmat, Npts, y, z, MmatTot] = define_eqns(Ny, Nz, Re)
 % define_eqns - compute matrices for linear channel (streamwise const)
 %
 %  [A, Aadj, B, Mmat, y, z] = define_eqns(Ny, Nz, Re)
@@ -123,11 +123,12 @@ A=inv(Mmat)*A;
 %title('Eigenvalues of A')
 
 Mmat = (Mmat + Mmat')/2;
-%Mmat = eye(2*Npts);
+MmatHalf = Mmat^0.5;
+Mint = defineIntegralWeights(y,z);
+MmatTot = MmatHalf*diag([Mint;Mint])*MmatHalf;
 
-%figure(2)
-%semilogy(eig(Mmat))
-%title('Eigenvalues of M')
+Aadj = MmatTot^-1*A'*MmatTot;
+
 
 %adjoint equations (streamwise constant, so only off-diag. term moves)
 % Aadj = [1/Re* (Dzz^2 + 2*Dyy*Dzz + D4y), -diag(Uprime)*Dz;
@@ -139,9 +140,7 @@ Mmat = (Mmat + Mmat')/2;
 
 %Aadj = inv(Mmat)*A'*Mmat;
 Aadj=A'; %changed!
-%B = zeros(2*Npts,1);
-%i=Nz/2; j=Ny/2;
-%B(i + (j-1)*Nz) = 1;   % disturbance in v
+
 
 B=write_ic(Ny,Nz,z,y,1);
 
